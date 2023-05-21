@@ -114,6 +114,7 @@ const Items = () => {
     }
   };
   
+  
 
   const handleDelete = (id) => {
     const updatedItems = items.filter((item) => item.id !== id);
