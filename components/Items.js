@@ -20,17 +20,19 @@ const Items = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    fetchData();
+    fetchItems();
   }, []);
-
-  const fetchData = async () => {
+  
+  const fetchItems = async () => {
     try {
-      const response = await api.get('/items');
-      setItems(response.data);
+      const response = await fetch('/items.json');
+      const data = await response.json();
+      setItems(data);
     } catch (error) {
       console.error(error);
     }
   };
+  
 
   const [image, setImage] = useState(null);
   const [createObjectURL, setCreateObjectURL] = useState(null);
@@ -60,72 +62,65 @@ const Items = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData.foto, 'photo');
-    try {
-      if (
-        formData.nama &&
-        formData.hargaBeli !== '' &&
-        formData.hargaJual !== '' &&
-        formData.stok !== ''
-      ) {
-        const itemData = new FormData();
-        
-        if (formData.foto) {
-          itemData.append('foto', formData.foto);
-        }
-        
-        itemData.append('nama', formData.nama);
-        itemData.append('hargaBeli', formData.hargaBeli);
-        itemData.append('hargaJual', formData.hargaJual);
-        itemData.append('stok', formData.stok);
   
-        if (isEdit) {
-          const response = await api.put(`/items/${editItemId}`, itemData);
-          console.log(response);
-        } else {
-          const response = await api.post('/items', itemData);
-          console.log(response);
-        }
+    if (
+      formData.nama &&
+      formData.hargaBeli !== '' &&
+      formData.hargaJual !== '' &&
+      formData.stok !== ''
+    ) {
+      const newItem = {
+        id: items.length + 1,
+        foto: createObjectURL || '/src/image/image.jpg',
+        nama: formData.nama,
+        hargaBeli: parseInt(formData.hargaBeli),
+        hargaJual: parseInt(formData.hargaJual),
+        stok: parseInt(formData.stok)
+      };
   
-        setFormData({
-          foto: createObjectURL,
-          nama: '',
-          hargaBeli: '',
-          hargaJual: '',
-          stok: ''
-        });
-        setIsFormOpen(false);
-        setIsEdit(false);
-        fetchData();
+      if (isEdit) {
+        const updatedItems = items.map((item) =>
+          item.id === editItemId ? newItem : item
+        );
+        setItems(updatedItems);
+      } else {
+        setItems((prevItems) => [...prevItems, newItem]);
       }
-    } catch (error) {
-      console.error(error);
+  
+      setFormData({
+        foto: null,
+        nama: '',
+        hargaBeli: '',
+        hargaJual: '',
+        stok: ''
+      });
+      setIsFormOpen(false);
+      setIsEdit(false);
     }
   };
   
+  
   const handleEdit = (item) => {
     setFormData({
-      foto: createObjectURL,
+      foto: null,
       nama: item.nama,
-      hargaBeli: item.harga_beli,
-      hargaJual: item.harga_jual,
-      stok: item.stok
+      hargaBeli: item.hargaBeli.toString(),
+      hargaJual: item.hargaJual.toString(),
+      stok: item.stok.toString()
     });
     setIsEdit(true);
     setEditItemId(item.id);
     setIsFormOpen(true);
   };
+  
 
-  const handleDelete = async (id) => {
-    try {
-      await api.delete(`/items/${id}`);
-      fetchData();
-    } catch (error) {
-      console.error(error);
-    }
+  const handleDelete = (id) => {
+    const updatedItems = items.filter((item) => item.id !== id);
+    setItems(updatedItems);
   };
+  
 
   // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -294,13 +289,13 @@ const Items = () => {
         <tbody>
           {currentSearchedItems.map((item) => (
             <tr key={item.id}>
-              <td className="border border-gray-300 px-4 py-2 text-center items-center">
+              <td className="border border-gray-300 px-4 py-2 flex justify-center">
                 <Image
                   src={item.foto ? item.foto : '/src/image/image.jpg' }
-                  width={20}
-                  height={20}
+                  width={100}
+                  height={100}
                   alt={item.name}
-                  className='flex content-center w-full'
+                  className='flex'
                 />
               </td>
               <td className="border border-gray-300 px-4 py-2 text-center">{item.nama}</td>
