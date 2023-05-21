@@ -1,0 +1,26 @@
+[
+    {
+        "id": 36,
+        "foto": "/src/image/image.jpg",
+        "nama": "tes",
+        "hargaBeli": 22,
+        "hargaJual": 11,
+        "stok": 4
+    },
+    {
+        "id": 46,
+        "foto": "/src/image/image.jpg",
+        "nama": "Barang 6",
+        "hargaBeli": 45,
+        "hargaJual": 44,
+        "stok": 3
+    },
+    {
+        "id": 47,
+        "foto": "/src/image/image.jpg",
+        "nama": "Barang 423",
+        "hargaBeli": 45,
+        "hargaJual": 34,
+        "stok": 3
+    }
+]
